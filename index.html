@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>Protocol X | بواسطة إسلام</title>
+<style>
+body {
+  margin:0;
+  background:black;
+  color:#00ffcc;
+  font-family: 'Courier New', monospace;
+  overflow:hidden;
+}
+canvas {
+  position:fixed;
+  top:0; left:0;
+  z-index:-1;
+}
+.container {
+  text-align:center;
+  margin-top:80px;
+}
+h1 { letter-spacing:3px; }
+#stats {
+  margin-bottom:20px;
+  font-size:18px;
+}
+#box {
+  background:rgba(0,0,0,0.8);
+  padding:40px;
+  border-radius:15px;
+  box-shadow:0 0 25px #00ffcc;
+  width:90%;
+  max-width:600px;
+  margin:auto;
+  transition:0.5s;
+}
+input {
+  padding:10px;
+  width:70%;
+  background:black;
+  color:#00ffcc;
+  border:1px solid #00ffcc;
+  border-radius:5px;
+}
+button {
+  padding:10px 25px;
+  background:#00ffcc;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  margin-top:15px;
+}
+button:hover {
+  background:#00ffaa;
+  transform:scale(1.05);
+}
+footer {
+  position:fixed;
+  bottom:10px;
+  width:100%;
+  text-align:center;
+  color:#555;
+}
+.fade { opacity:0; transform:translateY(20px); transition:0.6s; }
+.show { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="container">
+<h1>☠ Protocol X ☠</h1>
+<div id="stats">⏳ الوقت: <span id="timer">0</span> ثانية | ⭐ النقاط: <span id="score">0</span></div>
+
+<div id="box" class="show">
+<h2 id="stageTitle">المرحلة 1</h2>
+<p id="question"></p>
+<input type="text" id="answer" placeholder="اكتب الحل هنا">
+<br>
+<button onclick="check()">تحقق</button>
+</div>
+</div>
+
+<footer>بواسطة إسلام</footer>
+
+<script>
+// ==== 20 لغز ====
+let current = 0;
+let score = 0;
+let totalTime = 0;
+let stageTime = 0;
+
+const riddles=[
+{q:"5 × 6 ؟", a:"30"},
+{q:"فك التشفير: 56 49 43 54 4F 52 59", a:"victory"},
+{q:"عكس كلمة ليل؟", a:"نهار"},
+{q:"أملك مفاتيح بلا أبواب؟", a:"بيانو"},
+{q:"100 ÷ 4 ؟", a:"25"},
+{q:"عاصمة فرنسا؟", a:"باريس"},
+{q:"7 + 8 ؟", a:"15"},
+{q:"مربع 9 ؟", a:"81"},
+{q:"أنا أظهر ليلاً وأختفي نهاراً؟", a:"القمر"},
+{q:"12 × 2 ؟", a:"24"},
+{q:"نصف 50 ؟", a:"25"},
+{q:"أول شهر بالسنة؟", a:"يناير"},
+{q:"كم عدد حروف AI؟", a:"2"},
+{q:"لون السماء الصافي؟", a:"ازرق"},
+{q:"اليوم بعد الاثنين؟", a:"الثلاثاء"},
+{q:"شيء تكتبه ولا تراه؟", a:"فكرة"},
+{q:"8 × 8 ؟", a:"64"},
+{q:"20 ÷ 5 ؟", a:"4"},
+{q:"3 × 9 ؟", a:"27"},
+{q:"اكتب كلمة protocol", a:"protocol"}
+];
+
+function loadStage(){
+document.getElementById("stageTitle").innerText="المرحلة "+(current+1);
+document.getElementById("question").innerText=riddles[current].q;
+document.getElementById("answer").value="";
+stageTime=0;
+}
+
+function check(){
+let val=document.getElementById("answer").value.trim().toLowerCase();
+if(val===riddles[current].a){
+score+=10;
+current++;
+document.getElementById("score").innerText=score;
+if(current<riddles.length){
+fadeBox();
+} else {
+finishGame();
+}
+} else {
+alert("خطأ ❌ حاول مرة أخرى");
+}
+}
+
+function fadeBox(){
+document.getElementById("box").classList.remove("show");
+setTimeout(()=>{
+loadStage();
+document.getElementById("box").classList.add("show");
+},400);
+}
+
+function finishGame(){
+document.getElementById("box").innerHTML=
+"<h2>🔥 تهانينا 🔥</h2><p>لقد أنهيت جميع الألغاز.</p><p>⭐ النقاط: "+score+"</p><p>⏳ الوقت: "+totalTime+" ثانية</p><h3>كود الفوز: ISLAM-X-ELITE-777</h3>";
+}
+
+// ==== عداد الوقت ====
+setInterval(()=>{
+totalTime++;
+stageTime++;
+document.getElementById("timer").innerText=totalTime;
+},1000);
+
+// ==== خلفية Matrix ====
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+let width=canvas.width=window.innerWidth;
+let height=canvas.height=window.innerHeight;
+let cols=Math.floor(width/20);
+let ypos=Array(cols).fill(0);
+
+function matrix(){
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,width,height);
+ctx.fillStyle="#00ffcc";
+ctx.font="15px monospace";
+for(let i=0;i<ypos.length;i++){
+ let text=String.fromCharCode(33+Math.random()*94);
+ ctx.fillText(text,i*20,ypos[i]*20);
+ if(ypos[i]*20>height && Math.random()>0.975) ypos[i]=0;
+ ypos[i]++;
+}
+requestAnimationFrame(matrix);
+}
+
+matrix();
+window.addEventListener("resize",()=>{
+width=canvas.width=window.innerWidth;
+height=canvas.height=window.innerHeight;
+cols=Math.floor(width/20);
+ypos=Array(cols).fill(0);
+});
+
+loadStage();
+</script>
+</body>
+</html>
